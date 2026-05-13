@@ -1,0 +1,174 @@
+#include <iostream>
+#include <cstring>
+#include <fstream>
+using namespace std;
+
+const int SIZE = 20;
+
+struct films
+{
+    char title[60];      // название фильма
+    char director[50];   // режиссер
+    char type_fl[20];    // тип фильма
+    int release;         // год выпуска
+    int duration;        // длительность
+    int cost;            // стоимость создания
+    double rating;       // рейтинг
+    char actor[50];      // главный актер
+};
+
+films film[SIZE];
+films film_from_file[SIZE];
+
+void list_of_films()
+{
+    film[0] = { "Drive", "Nicolas_Winding_Refn", "thriller", 2011, 100, 15, 7.8, "Ryan_Gosling" };
+    film[1] = { "La_La_Land", "Damien_Chazelle", "musical", 2016, 128, 30, 7.9, "Ryan_Gosling" };
+    film[2] = { "Blade_Runner_2049", "Denis_Villeneuve", "fantastic", 2017, 164, 150, 8.0, "Ryan_Gosling" };
+    film[3] = { "The_Nice_Guys", "Shane_Black", "comedy", 2016, 116, 50, 7.4, "Ryan_Gosling" };
+    film[4] = { "Barbie", "Greta_Gerwig", "comedy", 2023, 114, 145, 6.8, "Ryan_Gosling" };
+
+    film[5] = { "Se7en", "David_Fincher", "thriller", 1995, 127, 33, 8.6, "Brad_Pitt" };
+    film[6] = { "Lost_Highway", "David_Lynch", "thriller", 1997, 134, 15, 7.6, "Bill_Pullman" };
+    film[7] = { "Eastern_Promises", "David_Cronenberg", "thriller", 2007, 100, 25, 7.6, "Viggo_Mortensen" };
+    film[8] = { "End_Of_Watch", "David_Ayer", "thriller", 2012, 109, 7, 7.6, "Jake_Gyllenhaal" };
+
+    film[9] = { "Avatar_Way_Of_Water", "James_Cameron", "fantastic", 2022, 192, 460, 7.5, "Sam_Worthington" };
+    film[10] = { "Fast_X", "Louis_Leterrier", "action", 2023, 141, 340, 5.8, "Vin_Diesel" };
+    film[11] = { "Indiana_Jones_5", "James_Mangold", "adventure", 2023, 154, 300, 6.5, "Harrison_Ford" };
+    film[12] = { "Mission_Impossible_7", "Christopher_McQuarrie", "action", 2023, 163, 291, 7.7, "Tom_Cruise" };
+    film[13] = { "Jurassic_World_Dominion", "Colin_Trevorrow", "fantastic", 2022, 147, 265, 5.6, "Chris_Pratt" };
+
+    film[14] = { "Dune", "Denis_Villeneuve", "fantastic", 2021, 155, 165, 8.0, "Timothee_Chalamet" };
+    film[15] = { "Dune_Part_Two", "Denis_Villeneuve", "fantastic", 2024, 166, 190, 8.5, "Timothee_Chalamet" };
+    film[16] = { "Oppenheimer", "Christopher_Nolan", "drama", 2023, 180, 100, 8.3, "Cillian_Murphy" };
+    film[17] = { "Tenet", "Christopher_Nolan", "fantastic", 2020, 150, 200, 7.3, "John_Washington" };
+    film[18] = { "The_Fall_Guy", "David_Leitch", "action", 2024, 126, 125, 6.9, "Ryan_Gosling" };
+    film[19] = { "John_Wick_4", "Chad_Stahelski", "action", 2023, 169, 100, 7.7, "Keanu_Reeves" };
+}
+
+void display_film(films f)
+{
+    cout << "Название: " << f.title << "\n";
+    cout << "Режиссер: " << f.director << "\n";
+    cout << "Тип фильма: " << f.type_fl << "\n";
+    cout << "Год выпуска: " << f.release << "\n";
+    cout << "Длительность: " << f.duration << "\n";
+    cout << "Стоимость создания: " << f.cost << "\n";
+    cout << "Рейтинг: " << f.rating << "\n";
+    cout << "Главный актер: " << f.actor << "\n\n";
+}
+
+void display_array(films a[], int k)
+{
+    int i;
+
+    for (i = 0; i < k; i++)
+    {
+        display_film(a[i]);
+    }
+}
+
+void create_text_file()
+{
+    ofstream fout;
+
+    fout.open("ratings.txt");
+
+    fout << "Drive " << 8.1 << "\n";
+    fout << "Barbie " << 7.0 << "\n";
+    fout << "Tenet " << 7.5 << "\n";
+    fout << "Dune " << 8.2 << "\n";
+    fout << "Oppenheimer " << 8.6 << "\n";
+
+    fout.close();
+}
+
+void read_rating_from_text_file()
+{
+    ifstream fin;
+    char name[60];
+    double new_rating;
+    int i;
+
+    fin.open("ratings.txt");
+
+    if (!fin.is_open())
+    {
+        cout << "Файл ratings.txt не открыт.\n";
+        return;
+    }
+
+    while (fin >> name >> new_rating)
+    {
+        for (i = 0; i < SIZE; i++)
+        {
+            if (!strcmp(name, film[i].title))
+            {
+                film[i].rating = new_rating;
+            }
+        }
+    }
+
+    fin.close();
+}
+
+void write_binary_file()
+{
+    ofstream fout;
+
+    fout.open("films.dat", ios::binary | ios::out);
+
+    if (!fout.is_open())
+    {
+        cout << "Бинарный файл для записи не открыт.\n";
+        return;
+    }
+
+    fout.write((char*)film, sizeof(film));
+
+    fout.close();
+}
+
+void read_binary_file()
+{
+    ifstream fin;
+
+    fin.open("films.dat", ios::binary | ios::in);
+
+    if (!fin.is_open())
+    {
+        cout << "Бинарный файл для чтения не открыт.\n";
+        return;
+    }
+
+    fin.read((char*)film_from_file, sizeof(film_from_file));
+
+    fin.close();
+}
+
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+
+    list_of_films();
+
+    cout << "Исходный массив фильмов:\n\n";
+    display_array(film, SIZE);
+
+    create_text_file();
+
+    read_rating_from_text_file();
+
+    cout << "\nМассив после чтения рейтингов из текстового файла:\n\n";
+    display_array(film, SIZE);
+
+    write_binary_file();
+
+    read_binary_file();
+
+    cout << "\nМассив, считанный из бинарного файла:\n\n";
+    display_array(film_from_file, SIZE);
+
+    return 0;
+}
